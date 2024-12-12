@@ -12,7 +12,7 @@ import org.mineskin.data.Variant;
 public class Types {
 
     static {
-        if (Classes.getClassInfoNoError("blueprint") == null) {
+        if (Classes.getExactClassInfo(Blueprint.class) == null) {
             Classes.registerClass(new ClassInfo<>(Blueprint.class, "blueprint")
                     .user("blueprints?")
                     .name("Blueprint - Blueprint")
@@ -37,14 +37,14 @@ public class Types {
                     })
             );
         }
-        if (Classes.getClassInfoNoError("skinmodel") == null) {
+        if (Classes.getExactClassInfo(Variant.class) == null) {
             Classes.registerClass(new EnumWrapper<>(Variant.class).getClassInfo("skinmodel")
                     .user("skin ?models?")
                     .name("Skin - Skin Model")
                     .description("Represents a skin model.")
                     .since("2.6"));
         }
-        if (Classes.getClassInfoNoError("blueprintpart") == null) {
+        if (Classes.getExactClassInfo(Blueprint.Part.class) == null) {
             Classes.registerClass(new EnumWrapper<>(Blueprint.Part.class).getClassInfo("blueprintpart")
                     .user("blueprint ?parts?")
                     .name("Skin - Blueprint Part")
