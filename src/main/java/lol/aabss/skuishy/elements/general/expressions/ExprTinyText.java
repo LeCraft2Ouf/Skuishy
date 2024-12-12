@@ -8,7 +8,6 @@ import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser;
-import ch.njol.skript.lang.UnparsedLiteral;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.skript.registrations.Classes;
 import ch.njol.skript.util.LiteralUtils;
@@ -18,8 +17,6 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 
 @Name("Other - Tiny Text")
 @Description("Returns a text in tiny caps.")
@@ -41,11 +38,10 @@ public class ExprTinyText extends SimpleExpression<String> {
 
     @Override
     protected String @NotNull [] get(@NotNull Event event) {
-        List<String> string = new ArrayList<>();
-        for (Object s : text.getArray(event)){
-            string.add(Text.tinyText(Classes.toString(s), superTiny));
-        }
-        return string.toArray(String[]::new);
+        return text.stream(event)
+                .map(Classes::toString)
+                .map(string -> Text.tinyText(string, superTiny))
+                .toArray(String[]::new);
     }
 
     @Override
@@ -65,10 +61,7 @@ public class ExprTinyText extends SimpleExpression<String> {
 
     @Override
     public boolean init(Expression<?>[] exprs, int i, @NotNull Kleenean kleenean, SkriptParser.ParseResult parseResult) {
-        text = (Expression<Object>) exprs[0];
-        if (text instanceof UnparsedLiteral) {
-            text = LiteralUtils.defendExpression(text);
-        }
+        text = LiteralUtils.defendExpression(exprs[0]);
         superTiny = parseResult.hasTag("super");
         return LiteralUtils.canInitSafely(text);
     }
