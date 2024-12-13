@@ -26,7 +26,7 @@ public class Text {
             if (index != -1){
                 string.append(superTiny ? supertiny.get(index) : tiny.get(index));
             } else {
-                if (st.equals("&")){
+                if (st.equals("&") || st.equals("§")){
                     b = true;
                 }
                 string.append(st);
