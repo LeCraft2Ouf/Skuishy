@@ -60,7 +60,6 @@ public class Skuishy extends JavaPlugin {
         instance = this;
         plugin_version = new Version(getPluginMeta().getVersion());
         saveDefaultConfig();
-        Blueprint.loadJson();
         getServer().getPluginManager().registerEvents(new UpdateChecker(), this);
         metrics = new Metrics(this, 20162);
         try {
