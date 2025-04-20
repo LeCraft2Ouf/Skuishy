@@ -4,7 +4,6 @@ import ch.njol.skript.Skript;
 import ch.njol.skript.SkriptAddon;
 import ch.njol.skript.bstats.bukkit.Metrics;
 import ch.njol.skript.bstats.charts.SimplePie;
-import ch.njol.skript.util.Version;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.LifecycleEventManager;
@@ -29,14 +28,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
-import static lol.aabss.skuishy.other.SubCommands.cmdDependencies;
-import static lol.aabss.skuishy.other.SubCommands.cmdInfo;
-import static lol.aabss.skuishy.other.SubCommands.cmdReload;
-import static lol.aabss.skuishy.other.SubCommands.cmdUpdate;
-import static lol.aabss.skuishy.other.SubCommands.cmdVersion;
+import static lol.aabss.skuishy.other.GetVersion.latestVersion;
+import static lol.aabss.skuishy.other.SubCommands.*;
 import static net.kyori.adventure.text.minimessage.MiniMessage.miniMessage;
 
-// TODO: remove and replace with AdventureAPI NamedTextColor
 @SuppressWarnings("deprecation")
 public class Skuishy extends JavaPlugin {
 
@@ -47,8 +42,6 @@ public class Skuishy extends JavaPlugin {
     public static Permission last_permission;
     public static Blueprint last_blueprint;
     public static String latest_version;
-    public static Version latest_version_object;
-    public static Version plugin_version;
     public static String data_path;
     public static HashMap<String, Boolean> element_map = new HashMap<>();
     public static final String prefix = ChatColor.of("#00ff00") + "[Skuishy] " + ChatColor.RESET;
@@ -58,8 +51,8 @@ public class Skuishy extends JavaPlugin {
     @SuppressWarnings("UnstableApiUsage")
     public void onEnable() {
         instance = this;
-        plugin_version = new Version(getPluginMeta().getVersion());
         saveDefaultConfig();
+        Blueprint.loadJson();
         getServer().getPluginManager().registerEvents(new UpdateChecker(), this);
         metrics = new Metrics(this, 20162);
         try {
@@ -73,17 +66,18 @@ public class Skuishy extends JavaPlugin {
             registerElements("Permission", "Permissions");
             registerElements("Persistence", "Persistence");
             registerElements("Plugin", "Plugins");
-//            registerElements("Skin", "Skins");
+            registerElements("Skin", "Skins");
         } catch (IOException e) {
             Logger.exception(e);
         }
         metrics.addCustomChart(new SimplePie("skript_version", () -> Skript.getVersion().toString()));
         start = System.currentTimeMillis()/50;
         Logger.success("Skuishy has been enabled!");
-//        Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, () -> {
-//            latest_version = latestVersion();
-//            if (getConfig().getBoolean("version-check-msg")) Logger.warn("Got latest version."); // not a warn just want yellow
-//        }, 0L, 144000L);
+        Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, () -> {
+            latest_version = latestVersion();
+            if (getConfig().getBoolean("version-check-msg")) Logger.warn("Got latest version."); // not a warn just want yellow
+        }, 0L, 144000L);
+        data_path = this.getDataFolder().getAbsolutePath();
 
         LifecycleEventManager<@org.jetbrains.annotations.NotNull Plugin> manager = this.getLifecycleManager();
         manager.registerEventHandler(LifecycleEvents.COMMANDS, event -> {

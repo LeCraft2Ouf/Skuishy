@@ -1,8 +1,33 @@
 package lol.aabss.skuishy.other;
 
+import ch.njol.skript.Skript;
+import com.destroystokyo.paper.profile.PlayerProfile;
+import com.destroystokyo.paper.profile.ProfileProperty;
+import lol.aabss.skuishy.Skuishy;
+import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+import org.bukkit.profile.PlayerTextures;
+import org.mineskin.GenerateOptions;
+import org.mineskin.Java11RequestHandler;
+import org.mineskin.MineSkinClient;
+import org.mineskin.data.Texture;
+import org.mineskin.data.Variant;
+import org.mineskin.data.Visibility;
+
+import javax.annotation.Nullable;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
 public class SkinWrapper {
 
-/*
     public static MineSkinClient client = MineSkinClient.builder().userAgent("Skuishy-Agent").requestHandler(Java11RequestHandler::new).build();
     public static GenerateOptions options = GenerateOptions.create().name("Skuishy-Upload").variant(Variant.AUTO).visibility(Visibility.UNLISTED);
 
@@ -31,7 +56,7 @@ public class SkinWrapper {
         }
     }
 
-    public static void setSkin(Player player, ValueAndSignature texture) {
+    public static void setSkin(Player player, Texture texture) {
         setSkin(player, texture.value(), texture.signature());
     }
 
@@ -83,27 +108,14 @@ public class SkinWrapper {
         }
     }
 
-    public static CompletableFuture<TextureInfo> uploadSkin(BufferedImage image) throws IOException {
-        GenerateRequest request = GenerateRequest.upload(image);
-        request.options(options.variant(Blueprint.getVariant(image)));
-        return client.queue().submit(request)
-                .thenCompose(queueResponse -> queueResponse.getJob().waitForCompletion(client))
-                .thenCompose(jobReference -> jobReference.getOrLoadSkin(client))
-                .thenApply(SkinInfo::texture);
+    public static CompletableFuture<Texture> uploadSkin(BufferedImage image) throws IOException {
+        return client.generateUpload(image, options.variant(Blueprint.getVariant(image)))
+                .thenApply(result -> result.getSkin().data().texture());
     }
 
-    public static CompletableFuture<TextureInfo> uploadSkin(String url) {
-        try {
-            GenerateRequest request = GenerateRequest.url(url);
-            request.options(options);
-            return client.queue().submit(request)
-                    .thenCompose(queueResponse -> queueResponse.getJob().waitForCompletion(client))
-                    .thenCompose(jobReference -> jobReference.getOrLoadSkin(client))
-                    .thenApply(SkinInfo::texture);
-        } catch (IOException exception) {
-            return CompletableFuture.failedFuture(exception);
-        }
+    public static CompletableFuture<Texture> uploadSkin(String url) {
+        return client.generateUrl(url, options)
+                .thenApply(result -> result.getSkin().data().texture());
     }
-*/
 
 }
